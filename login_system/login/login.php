@@ -8,7 +8,30 @@
 <body>
 <?php
 include "../../db/db_connection.php";
-// LOGIN LOGICS
+session_start();
+// $_SESSION
+if(isset($_REQUEST['username'])){
+    $username = stripslashes($_REQUEST['username']);
+    $username = mysqli_real_escape_string($con, $username);
+    $password = stripslashes($_REQUEST['password']);
+    $password = mysqli_real_escape_string($con, $password);
+    // Check user is exist in the database
+
+    $query = "SELECT * FROM `users` WHERE username='$username' AND password='" . md5($password) . "'";
+    $result = mysqli_query($con, $query) or die(mysql_error());
+    
+    $row = mysqli_num_rows($result);
+    
+    if($row == 1){
+        $_SESSION['username'] = $username;
+        //Redirect to app index page 
+        header("Location: ../../app/clock.php");
+    } else {
+        include_once "login_failed_alert.php";
+    }
+} else {
+       include_once "login_form.php";
+}
 ?>
 </body>
 </html>
